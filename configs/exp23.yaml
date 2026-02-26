@@ -1,0 +1,165 @@
+# configs/config.yaml
+
+data:
+  # Root directory containing raw image data (train/test split)
+  data_root: "root_to_your_dataset"
+
+  # Directory for storing pre-computed feature cache files
+  cache_dir: "features/cache"
+
+  # Precomputed cache file paths (can be absolute or relative to project root)
+  train_cache_dir: "features/cache/train"
+  test_cache_dir: "features/cache/test"
+
+  # Image preprocessing parameters used by transforms
+  # Input size for CNN (pixels)
+  input_size: 224
+  # ImageNet normalization (mean / std for 3 channels)
+  imagenet_mean: [0.485, 0.456, 0.406]
+  imagenet_std: [0.229, 0.224, 0.225]
+
+  # Directory for evaluation results and visualizations
+  results_dir: "results"
+
+  # Maximum number of parallel workers for feature extraction
+  max_workers: 8
+
+  # Image size threshold for memory optimization (in pixels)
+  image_size_threshold: 4000000
+
+  # Minimum file size to process (in bytes) - skips very small files
+  min_file_size: 5000
+
+  # Maximum pixels per image when loading from disk
+  max_pixels_in_memory: 6000000
+
+model:
+  # Human-readable model name (used for organizing results)
+  model_name: "B0_Final_Dropout7_lr1e-5_epochs80"
+
+  # Description of the experiment
+  description: "Hybrid model with efficientnet_b0 backbone, batch size 128, tensor augment, FrequencyAwareAFFNet, freezing 50% of CNN layers, dropout 0.7, learning rate 1e-5, 80 epochs"
+
+  # Model type: hybrid, cnn_only, handcraft_only
+  model_type: "FrequencyAwareAFFNet"
+
+  # CNN backbone architecture: resnet50, resnet101, inception_v3
+  cnn_backbone: "efficientnet_b0"
+
+  # Use pre-trained weights
+  pretrained: true
+
+  # Hand-crafted features dimension (3 FFT + 9 DCT + 2 filtering)
+  hand_feat_dim: 14
+
+  # CNN feature dimension from ResNet50
+  cnn_feat_dim: 2048
+
+  # Hidden dimension for fusion layers
+  hidden_dim: 512
+
+  # Number of output classes (2 for real vs AI-generated)
+  num_classes: 2
+
+  # Directory to save model checkpoints
+  checkpoint_dir: "checkpoints"
+
+  # Filename for best model during training
+  # If a model_name is provided, this will default to "{model_name}_best.pth"
+  # If not, it defaults to "hybrid_best.pth"
+  # If you want a custom name, uncomment and set below:
+  # best_model_name: "hybrid_best_60k.pth"
+
+  # Human-readable class names used for plotting and reports
+  class_names:
+    - "Real"
+    - "AI-Generated"
+
+training:
+  # Training batch size
+  train_batch_size: 128
+
+  # Validation/Test batch size
+  test_batch_size: 256
+
+  # Maximum number of training epochs
+  num_epochs: 80
+
+  # Learning rate for optimizer
+  learning_rate: 0.00005
+
+  # Freeze portion of CNN layers (0.0 = none, 1.0 = all)
+  freeze_until: 0.5
+
+  # Dropout rate for fully connected layers (0.0 = no dropout)
+  dropout_rate: 0.7
+
+  # Optimizer type: adam, sgd, adamw
+  optimizer: "adam"
+
+  # Adam parameters
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+
+  # Early stopping
+  early_stopping_metric: "auc"
+  early_stopping_patience: 3
+
+  # DataLoader workers and persistence
+  num_workers: 0
+  persistent_workers: true
+
+  # Augmentation
+  augmentation_flip_prob: 0.5
+
+  # Use weighted loss to handle class imbalance
+  weighted_loss: false
+
+  # Logging and checkpointing
+  log_interval: 0
+  save_interval: 0
+
+inference:
+  # Batch size for inference
+  inference_batch_size: 256
+
+  # Use half-precision float16 (requires compatible GPU)
+  use_mixed_precision: false
+
+  # Confidence threshold for predictions
+  confidence_threshold: 0.5
+
+  # Return probabilities instead of just class labels
+  return_probabilities: true
+
+evaluation:
+  # Metrics to compute
+  metrics:
+    - auc
+    - accuracy
+    - precision
+    - recall
+    - f1
+
+  # Figure settings
+  figure_dpi: 300
+  plot_style: "seaborn-v0_8"
+  color_palette: "husl"
+  # Output directory for evaluation results (can be overridden per-run)
+  output_dir: "results"
+  # Test batch size for evaluation (if different from training/test batch size)
+  test_batch_size: 256
+
+device:
+  # Number of CUDA threads (0 = default)
+  num_cuda_threads: 0
+
+  # Number of CPU threads for PyTorch (0 = use all)
+  num_threads: 0
+
+  # cuDNN settings
+  cudnn_benchmark: true
+  cudnn_deterministic: false
+
+  # Pin memory setting for DataLoader (useful for CUDA devices)
+  pin_memory: false

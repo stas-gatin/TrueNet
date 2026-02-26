@@ -1,0 +1,26 @@
+data_root: "root_to_your_dataset"
+cache_dir: "features/cache"
+max_workers: 8
+image_size_threshold: 4000000
+min_file_size: 5000
+resized_image_size: [1024, 1024]
+input_size: 224
+feature_config:
+  features:
+    fft:
+      enabled: true
+      size: 256
+      low_cutoff: 0.2
+      high_cutoff: 0.6
+
+    dct:
+      enabled: true
+      size: 256
+      zones: [0.25, 0.5]
+
+    freq_filter:
+      enabled: true
+      size: 256
+imagenet_mean: [0.485, 0.456, 0.406]
+imagenet_std: [0.229, 0.224, 0.225]
+augmentation_flip_prob: 0.5
